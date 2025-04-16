@@ -1,16 +1,13 @@
 package pages;
 
 import base.BasePage;
-import org.openqa.selenium.WebDriver;
 
 import static constants.ConstantsHomePage.*;
 
-
 public class HomePage extends BasePage {
-    public HomePage(WebDriver driver) {
-        super(driver);
+    public HomePage() {
+        super();
     }
-
     //Clicks the button to accept cookies.
     public void clickCookieAcceptButton(){
         clickToWebElement(cookieAcceptButton);
@@ -28,8 +25,6 @@ public class HomePage extends BasePage {
 
     //Retrieves the title of the current page.
     public String getHomePageTitle(){
-     return  driver.getTitle();
+        return  driver.getTitle();
     }
-
-
 }

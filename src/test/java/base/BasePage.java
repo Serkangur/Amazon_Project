@@ -1,50 +1,65 @@
 package base;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import utilities.Driver;
 
-
+import java.time.Duration;
 
 public class BasePage {
     protected WebDriver driver;
+    protected WebDriverWait wait;
 
+    // Singleton Driver ile kurucu method
+    public BasePage() {
+        this.driver = Driver.getDriver(); // Singleton driver çağrısı
+        PageFactory.initElements(driver, this); // Elementleri initialize et
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(20)); // Dinamik bekleme
+    }
 
+    // Eğer ekstra esneklik gerekiyorsa bu versiyonu da tutabilirsin:
     public BasePage(WebDriver driver) {
         this.driver = driver;
+        PageFactory.initElements(driver, this);
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(20));
     }
 
-    //Finds and returns a WebElement using the provided locator.
+
     public WebElement find(By locator){
-        return driver.findElement(locator);
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
-    //Retrieves the current page URL.
     public String getCurrentUrl(){
         return driver.getCurrentUrl();
     }
 
-    //Clicks on a WebElement using the provided locator.
-    public  void clickToWebElement (By locator){
-        find(locator).click();
-    }
-    //Inputs the given text into a text field located by the provided locator.
-    public void inputTextMethod(String input,By locator) {
-        find(locator).sendKeys(input);
+    public void clickToWebElement(By locator){
+        WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
+        element.click();
     }
 
+    public void inputTextMethod(String input,By locator){
+        WebElement element= find(locator);
+        element.clear();
+        element.sendKeys(input);
+    }
 
-    // Retrieves the text from a WebElement.
-    //If the text is longer than 28 characters, trims the last 28 characters.
-    // This is used to match product names in the cart.
+    public WebElement waitElement(By locator){
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+    }
+
     public String getTextMethod(By locator) {
-        String text = find(locator).getText();
+        String text = waitElement(locator).getText();
         if (text.length() > 28) {
             text = text.substring(0, text.length() - 28);
         }
         return text;
     }
+
 
     //Pauses execution for the specified time.
     public static void delay(int millisecond){
@@ -54,10 +69,4 @@ public class BasePage {
             e.printStackTrace();
         }
     }
-
-
-
-
-
-
 }
